@@ -99,7 +99,16 @@ public class Main {
         String path = getPlainPath(command);
         File fPath = new File(path);
         // debugOn(path);
-        if (!fPath.isFile()) {
+        if (command.equalsIgnoreCase("pwd")) {
+            File pwd = new File(command);
+            // System.out.println(pwd.getAbsolutePath());
+            // System.out.println(pwd.getCanonicalPath());
+            // System.out.println(pwd.getName());
+            // System.out.println(pwd.getParent());
+            System.out.println(pwd.getCanonicalFile().getParent());
+            // System.out.println(pwd.getPath());
+
+        } else if (!fPath.isFile()) {
             System.out.println(command + ": command not found");
         } else {
             String fullPath = path + input.substring(command.length());
@@ -112,7 +121,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        String[] built_in_commands = { "echo", "exit", "type" };
+        String[] built_in_commands = { "echo", "exit", "type", "pwd" };
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
