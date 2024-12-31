@@ -14,7 +14,7 @@ public class Main {
     }
 
     public static String getPath(String typeString) {
-        Boolean pathFlag = Boolean.FALSE;
+        // Boolean pathFlag = Boolean.FALSE;
         String path = System.getenv("PATH");
         String typeStringLoc = typeString + ": not found";
         // String typeStringLocdebug = "";
@@ -27,7 +27,7 @@ public class Main {
             // System.out.printf(Arrays.toString(paths));
             // System.out.println("BEFORE PRINTING PATHS ");
             for (String p : paths) {
-                pathFlag = Boolean.FALSE;
+                // pathFlag = Boolean.FALSE;
                 // System.out.printf("%s%n", p);
                 // System.out.println("FILES ->" + p);
 
@@ -41,33 +41,73 @@ public class Main {
                         // System.out.printf("%s%n", f);
                         String fstr = f.toString();
                         String subFstr = fstr.substring(fstr.lastIndexOf(File.separator) + 1);
-                        // System.out.println(fstr);
-                        // System.out.println(subFstr);
                         if (subFstr.equalsIgnoreCase(typeString)) {
-                            pathFlag = Boolean.TRUE;
-                            // System.out.printf("CAT FOUND%s%n", f);
-                            // File filefound = new File(f);
-                            // System.out.println(typeString + " is " + filefound.getParent());
-                            // System.out.println(typeString + " is " + f);
+                            // pathFlag = Boolean.TRUE;
                             typeStringLoc = typeString + " is " + f;
                             break;
                         }
                     }
                 }
             }
-            // debugOn("COMMAND WHEN ??" + typeStringLoc);
-            // typeStringLocdebug += "\t" + typeStringLoc;
-            // if (pathFlag != Boolean.TRUE) {
-            // // System.out.println("HELLO BEFORE pathFLAG" + pathFlag);
-            // // System.out.println("INSIDE pathFLAG");
-            // // notFound(typeString);
-            // typeStringLoc = typeString + " : not found";
-            // // System.out.println("typeStringLoc " + typeStringLoc);
-
-            // }
         }
-        // debugOn("typeStringLocdebug " + typeStringLocdebug);
         return typeStringLoc;
+    }
+
+    public static String getPlainPath(String typeString) {
+        // Boolean pathFlag = Boolean.FALSE;
+        String path = System.getenv("PATH");
+        String typeStringLoc = typeString + ": not found";
+        // String typeStringLocdebug = "";
+
+        if (path != null || !(path.equalsIgnoreCase("")) || typeString != null) {
+            // System.out.println("INSIDE PATH LIST TYPE ");
+            // System.out.printf("HELLO %s", path);
+            String[] paths = path.split(":");
+
+            // System.out.printf(Arrays.toString(paths));
+            // System.out.println("BEFORE PRINTING PATHS ");
+            for (String p : paths) {
+                // pathFlag = Boolean.FALSE;
+                // System.out.printf("%s%n", p);
+                // System.out.println("FILES ->" + p);
+
+                File file = new File(p);
+                File[] files = file.listFiles();
+
+                // System.out.printf(Arrays.toString(files));
+                if (files != null) {
+                    // System.out.println(Arrays.asList(files).contains(typeString));
+                    for (File f : files) {
+                        // System.out.printf("%s%n", f);
+                        String fstr = f.toString();
+                        String subFstr = fstr.substring(fstr.lastIndexOf(File.separator) + 1);
+                        if (subFstr.equalsIgnoreCase(typeString)) {
+                            // pathFlag = Boolean.TRUE;
+                            typeStringLoc = f.toString();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return typeStringLoc;
+    }
+
+    public static void executeCommand(String input) throws Exception {
+        String command = input.split(" ")[0];
+        // debugOn(command);
+        String path = getPlainPath(command);
+        File fPath = new File(path);
+        // debugOn(path);
+        if (!fPath.isFile()) {
+            System.out.println(command + ": command not found");
+        } else {
+            String fullPath = path + input.substring(command.length());
+            // debugOn(fullPath);
+            // System.out.println(Arrays.toString(fullPath.split(" ")));
+            Process p = Runtime.getRuntime().exec(fullPath.split(" "));
+            p.getInputStream().transferTo(System.out);
+        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -100,12 +140,17 @@ public class Main {
                         // debugOn("AFTER PATH" + typePath);
                     }
                 } else {
-                    notFound(input);
+                    // debugOn("AM I HERE");
+                    // notFound(input);
+                    // String typePath = getPath(input);
+                    // System.out.println(typePath);
+                    executeCommand(input);
                 }
             } else {
                 break;
             }
 
+            // debugOn(input);
         }
     }
 }
